@@ -1,0 +1,16 @@
+var data = {
+	"xScale": "linear",
+	"yScale": "linear",
+	"type": "line",
+	"main": [
+	{
+		"className": ".build",
+		"data": [
+		{
+			"x":0,
+			"y":601,
+		},
+		]
+	}
+	]
+}

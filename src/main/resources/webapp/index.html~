@@ -1,0 +1,183 @@
+<!DOCTYPE HTML>
+<!--
+	Strongly Typed by HTML5 UP
+	html5up.net | @n33co
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>SSIP | Home </title>
+		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+		<script src="js/jquery.min.js"></script>
+		<script src="js/skel.min.js"></script>
+		<script src="js/init.js"></script>
+
+		<script>
+
+		var p=1;
+		var fileStr = "file";
+		var parserStr = "parser";
+
+		function addData() {
+
+				//create file upload element
+				var fileUp = document.createElement("input");
+				var att1 = document.createAttribute("name");
+				att1.value = fileStr.concat(p);
+				var att2 = document.createAttribute("type");
+				att2.value = "file";
+				fileUp.setAttributeNode(att1);
+				fileUp.setAttributeNode(att2);
+
+				//create parser drop down list
+				var par = document.createElement("select");
+				var att1 = document.createAttribute("name");
+				att1.value = parserStr.concat(p);
+				par.setAttributeNode(att1);
+				
+				//initialise options array with parsers
+				for (var i=0; i < month.length;++i){
+					var opt = document.createElement("option");
+					var att4 = document.createAttribute("value");
+					att4.value = month[i];
+					opt.setAttributeNode(att4);
+					opt.innerHTML = month[i];
+					par.appendChild(opt);
+				}
+
+				//create table elements and position everything 
+				var newtr = document.createElement("tr");
+				var newtd1 = document.createElement("td");
+				var newtd2 = document.createElement("td");
+				newtd1.appendChild(fileUp);
+				newtd2.appendChild(par);
+				newtr.appendChild(newtd1);
+				newtr.appendChild(newtd2);
+				
+				var form_element = document.getElementById("uiTable");				
+				form_element.appendChild(newtr);
+				p=p+1;
+		}
+		var j=0;
+		function myFunction() {
+			if (j==0){
+				var form_element = document.getElementById("filePathForm");
+				var btn = document.createElement("input");
+				var att1 = document.createAttribute("name");
+				att1.value = "metadata";
+				var att2 = document.createAttribute("type");
+				att2.value = "text";
+				var att3 = document.createAttribute("placeholder");
+				att3.value = "Please insert path to metadata";
+				btn.setAttributeNode(att1);
+				btn.setAttributeNode(att2);
+				btn.setAttributeNode(att3);
+				var prev_item = document.getElementById("filepath");
+				form_element.insertBefore(btn,prev_item);
+				i=i+1;
+			}
+		}
+
+		</script>
+
+		<noscript>
+			<link rel="stylesheet" href="css/skel.css" />
+			<link rel="stylesheet" href="css/style.css" />
+			<link rel="stylesheet" href="css/style-desktop.css" />
+		</noscript>
+		<link href="images/text_free_logo_red.png" rel="icon" type="image/x-icon" />
+		<!--[if lte IE 8]><link rel="stylesheet" href="css/ie/v8.css" /><![endif]-->
+	</head>
+	<body class="homepage">
+
+		<!-- Header -->
+		<div id="header-wrapper">
+			<div id="header" class="container">
+				
+				<!-- Logo -->
+					<h1 id="logo"><a href="http://homepages.cs.ncl.ac.uk/m.g.collison/biossip/index.html" target="_blank">
+					Semantically Scalable Integration Platform for Bioinformatics</a></h1>				
+				
+				<!-- Nav -->
+					<nav id="nav">
+						<ul>
+							<li><a class="icon fa-home" href="http://homepages.cs.ncl.ac.uk/m.g.collison/biossip/index.html" 
+							target="_blank"><span>Home</span></a></li>
+							<li><a class="icon fa-cog" href="http://homepages.cs.ncl.ac.uk/m.g.collison/biossip/documentation.html" 
+							target="_blank"><span>Documentation</span></a></li>
+							<li><a class="icon fa-phone" href="http://homepages.cs.ncl.ac.uk/m.g.collison/biossip/contact.html" 
+							target="_blank"><span>Contact</span></a></li>
+						</ul>
+					</nav>
+
+			</div>
+		</div>
+		
+		<!-- Main body -->
+		<div id="main-wrapper">
+			<div id="main" class="container">
+				<div id="content">
+					<!-- Post -->
+						<article class="box post">
+							<header>
+								<h2>Integrate your data</h2>
+							</header>
+							<form method="POST" action="servlet" id="filePathForm" enctype="multipart/form-data">
+								<table id="uiTable">
+									<tr>
+										<td>File:</td>
+										<td>Parser:</td>
+									</tr>
+									<tr id="tableRow">
+										<td><input type="file" name="file0" id="fileUpload" /></td> 
+										<td id="tableCol">
+											<script>
+												var form_element = document.getElementById("filePathForm");
+												var menu = document.createElement("select");
+												var att = document.createAttribute("name");
+												att.value = "parser0";
+												menu.setAttributeNode(att);
+												
+												//initialise options array with parsers
+												
+												for (var i=0; i < month.length;++i){
+													var opt = document.createElement("option");
+													var att4 = document.createAttribute("value");
+													att4.value = month[i];
+													opt.setAttributeNode(att4);
+													opt.innerHTML = month[i];
+													menu.appendChild(opt);
+												}
+												var prev_item = document.getElementById("tableCol");
+												prev_item.appendChild(menu);
+											</script>
+										</td>
+									</tr>
+								</table>
+								<a href="#" onclick="addData()">Add another data source</a>
+								<br />
+								<br />
+								<input type="submit" value="Upload" name="upload" id="upload" />
+							</form>
+							<table>
+							<a href="#" onclick="myFunction()">Advanced settings...</a>							
+						</article>
+				
+				</div>
+			</div>
+		</div>
+
+
+		<!-- Footer -->
+		<div id="footer-wrapper">
+			<div id="copyright" class="container">
+				<ul class="links">
+					<li>&copy; <a href="http://homepages.cs.ncl.ac.uk/m.g.collison/">Matt Collison</a></li>
+					<li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+					<li><a class="icon fa-bitbucket" href="https://bitbucket.org/m_collison/ssip"><span> Source Code</span></a></li>
+				</ul>
+			</div>
+		</div>
+
+	</body>
+</html>

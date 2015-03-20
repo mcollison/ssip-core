@@ -1,0 +1,20 @@
+{
+  "xScale": "linear",
+  "yScale": "linear",
+  "type": "line",
+  "main": [
+	{
+	  "className": ".build",
+	  "data": [
+		{
+		  "x": 0,
+		  "y": 12
+		},
+		{
+		  "x": 10000,
+		  "y": 8000
+		}
+	  ]
+	}
+  ]
+}

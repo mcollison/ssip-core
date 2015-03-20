@@ -1,0 +1,201 @@
+<!DOCTYPE HTML>
+<!--
+	Strongly Typed by HTML5 UP
+	html5up.net | @n33co
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>SSIP | Query </title>
+		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+		<script src="js/jquery.min.js"></script>
+		<script src="js/skel.min.js"></script>
+		<script src="js/init.js"></script>
+		<script src="js/d3.min.js"></script>
+		<script src="js/d3.js"></script>
+		<script src="js/xcharts-build/build/xcharts.js"></script>
+		<script src="js/xcharts-build/build/xcharts.min.js"></script>
+		<script src="js/release-v1.0.3/sigma.min.js"></script>
+		<script src="js/release-v1.0.3/plugins/sigma.parsers.gexf.min.js"></script>
+		<script src="js/release-v1.0.3/plugins/sigma.parsers.json.min.js"></script>
+
+		<link rel="stylesheet" href="css/skel.css" />
+		<link rel="stylesheet" href="css/style.css" />
+		<link rel="stylesheet" href="css/style-desktop.css" />
+		<link rel="stylesheet" href="css/style.css">
+		<link rel="stylesheet" href="js/xcharts-build/build/xcharts.min.css">
+		<link rel="stylesheet" href="js/xcharts-build/build/xcharts.css">
+		<style type="text/css">
+			#sigma-container {
+				max-width: 800px;
+				height: 400px;
+				margin: auto;
+			}
+		</style>
+		<link href="images/text_free_logo_red.png" rel="icon" type="image/x-icon" />
+		<!--[if lte IE 8]><link rel="stylesheet" href="css/ie/v8.css" /><![endif]-->
+	</head>
+	<body class="homepage">
+
+		<!-- Header -->
+		<div id="header-wrapper">
+			<div id="header" class="container">
+
+				<!-- Nav -->
+					<nav id="nav">
+						<ul>
+							<li><a class="icon fa-home" href="http://homepages.cs.ncl.ac.uk/m.g.collison/biossip/index.html"
+							target="_blank"><span>Home</span></a></li>
+							<li><a class="icon fa-cog" href="http://homepages.cs.ncl.ac.uk/m.g.collison/biossip/documentation.html"
+							target="_blank"><span>Documentation</span></a></li>
+							<li><a class="icon fa-phone" href="http://homepages.cs.ncl.ac.uk/m.g.collison/biossip/contact.html"
+							target="_blank"><span>Contact</span></a></li>
+						</ul>
+					</nav>
+
+				<!-- Logo -->
+					<h1 id="logo"><a href="http://homepages.cs.ncl.ac.uk/m.g.collison/biossip/index.html" target="_blank">
+					Semantically Scalable Integration Platform for Bioinformatics</a>
+
+					<br /><br /><hr>
+
+					<ul>
+						<li><a href="./build">BUILD</a></li>
+						|
+						<li><strong><a href="./query">QUERY</a></strong></li>
+					</ul>
+				</h1>
+			</div>
+		</div>
+
+		<!-- Main body -->
+		<div id="main-wrapper">
+			<div id="main" class="container">
+				<div class="row">
+
+					<!-- Sidebar -->
+						<div id="sidebar" class="4u">
+
+							<!-- Excerpts -->
+								<section>
+									<ul class="divided">
+										<li><a href="#export_all"><span>Export all</span></a></li>
+										<li><a href="#canned_queries"><span>Pre-compiled queries</span></a>
+										<li><a href="#live_query"><span>Live query</span></a></li>
+									</ul>
+								</section>
+
+						</div>
+
+					<!-- Content -->
+						<div id="content" class="8u skel-cell-important">
+
+							<!-- Post -->
+								<article class="box post">
+									<header id='export_all'>
+										<h1>Export all</h1>
+									</header>
+
+									<h1><ul>
+									<li><a href="./exportall.gexf" method="POST" target="_blank" class="button icon fa-download">Download GEXF</a></li>
+									<li><a href="./public_html/results/export_all.rdf" class="button icon fa-download">Download RDF</a></li>
+									</ul><h1>
+									</form>
+
+									<header id='canned_queries'>
+										<h1>Pre-compiled queries</h1>
+									</header>
+									
+									<!-- insert canned queries here -->
+									
+									<!--EXAMPLE QUERY TABLE 
+									Seed node type-id pair: "KOlevel4" "K16197"
+									<table style="width:100%">
+									  <tr>
+										<td>Steps</td>
+										<td>Depth</td> 
+										<td>Depth first?</td>
+										<td>Relationship type restrictions</td>
+									  </tr>
+									  <tr>
+										<td>1</td>
+										<td>2</td> 
+										<td>true</td>
+										<td>NA</td>
+									  </tr>
+									</table>
+									<script>
+									sigma.parsers.gexf(
+										'./results/gephi_export_all.gexf',
+										{
+											// Here is the ID of the DOM element that
+											// will contain the graph:
+											container: 'sigma-container'
+										},
+										function(s) {
+											// This function will be executed when the
+											// graph is displayed, with "s" the related
+											// sigma instance.
+										}
+									);
+									</script>
+									<div id="sigma-container"></div>
+									EXAMPLE ENDS HERE
+									-->
+									
+									<header id='live_query'>
+										<h1>Live query</h1>
+									</header>
+									<form method="POST" action="query" id="sparqlForm" enctype="multipart/form-data">
+									Seed node type-id pair: 
+									<input type="text" name="type" placeholder="KOlevel4"> 
+									<input type="text" name="id" placeholder="K16197">
+									
+									<table style="width:100%">
+									  <tr>
+										<td>Steps</td>
+										<td>Depth</td> 
+										<td>Depth first?</td>
+										<td>Relationship type restrictions<td>
+									  </tr>
+									  <tr>
+										<td><input type="number" name="stepno" placeholder="1"></td>
+										<td><input type="number" name="steps" placeholder="2"></td> 
+										<td><input type="text" name="depth_first" placeholder="true"></td>
+										<td><input type="text" name="relTypes" placeholder="NA"></td>
+									  </tr>
+									</table>
+									<input type="submit" value="Submit query" name="subQ" id="submit_query" />
+
+									</form>
+									
+									<!--SPARQL QUERIES CAN BE INTEGRATED AFTER INTERPRETER IS IMPLEMENTED
+									<form method="POST" action="query" id="sparqlForm" enctype="multipart/form-data">
+										SPARQL query:<br>
+										<input type="text" name="sparql_query" style="width:100%">
+										<br><br>
+										<input type="submit" value="Submit query" name="subQ" id="submit_query" />
+									</form>
+									-->
+
+								</article>
+
+						</div>
+
+				</div>
+			</div>
+		</div>
+
+		<!-- Footer -->
+		<div id="footer-wrapper">
+			<div id="copyright" class="container">
+				<ul class="links">
+					<li>&copy; <a href="http://homepages.cs.ncl.ac.uk/m.g.collison/">Matt Collison</a></li>
+					<li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+					<li><a class="icon fa-bitbucket" href="https://bitbucket.org/m_collison/ssip"><span> Source Code</span></a></li>
+				</ul>
+			</div>
+		</div>
+
+	</body>
+</html>
