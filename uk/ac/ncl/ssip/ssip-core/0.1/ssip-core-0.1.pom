@@ -83,7 +83,7 @@
                             <addClasspath>true</addClasspath>
                             <useUniqueVersions>false</useUniqueVersions>
                             <classpathPrefix>lib/</classpathPrefix>
-                            <mainClass>uk.ac.ncl.ssip.webserver.SSIPWebServer</mainClass>
+                            <mainClass>uk.ac.ncl.ssip.main.AbstractMain</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
