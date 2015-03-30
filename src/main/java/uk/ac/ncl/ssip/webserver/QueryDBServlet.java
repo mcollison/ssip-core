@@ -7,6 +7,7 @@ package uk.ac.ncl.ssip.webserver;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.Scanner;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -14,13 +15,17 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import uk.ac.ncl.ssip.queryframework.StepDescription;
 import uk.ac.ncl.ssip.queryframework.CustomQuery;
-import uk.ac.ncl.ssip.queryframework.QueryInterface;
+import uk.ac.ncl.ssip.queryframework.QueryAbstractClass;
 
 /**
  *
  * @author matt
  */
 public class QueryDBServlet extends HttpServlet {
+    protected List<QueryAbstractClass> queries;
+    public QueryDBServlet(List<QueryAbstractClass> queries){
+        this.queries= queries;
+    }
 
     private CustomQuery custQ = null;
 
@@ -57,49 +62,43 @@ public class QueryDBServlet extends HttpServlet {
         response.setStatus(HttpServletResponse.SC_OK);
 
         try {
-            Scanner sc = new Scanner(new File("./public_html/query.html"));
+            Scanner sc = new Scanner(new File("./target/webapp/query.html"));
             while (sc.hasNextLine()) {
                 String str = sc.nextLine();
 
                 if (str.contains("<!-- insert canned queries here -->")) {
-                    File classDir = new File("./target/classes/uk/ac/ncl/ssip/queryframework/");
-                    String[] classArr = classDir.list();
-                    for (int i = 0; i < classArr.length - 1; i++) {
-                        //if statement to remove example queriesand interface
-                        if (!(classArr[i].contains("Interface")
-                                || classArr[i].contains("CustomQuery")
-                                || classArr[i].contains("ExampleQueryStrategy"))) {
 
-                            QueryInterface queryClass = (QueryInterface) Class
-                                    .forName("uk.ac.ncl.ssip.queryframework." + classArr[i].replace(".class", ""))
-                                    .newInstance();
+                    for (QueryAbstractClass query : queries) {
 
-                            response.getWriter().print(queryClass.getClass().getSimpleName()
-                                    + "\nSeed node type-id pair: \"" + queryClass.getSeedID()
-                                    + "\"\t \"" + queryClass.getSeedType() + "\n"
+                        try{
+                            response.getWriter().print(query.getClass().getSimpleName()
+                                    + "\nSeed node type-id pair: \"" + query.getSeedID()
+                                    + "\"\t \"" + query.getSeedType() + "\n"
                                     + "<table style=\"width:100%\">"
                                     + "<tr><td>Steps</td><td>Depth</td><td>Depth first?</td>\n"
                                     + "<td>Relationship type restrictions</td></tr>");
-                            for (int j = 0; j < queryClass.getSteps().length; j++) {
+                            for (int j = 0; j < query.getSteps().length; j++) {
                                 response.getWriter().print("<tr><td>" + j + "</td>"
-                                        + "<td>" + queryClass.getSteps()[j].getDepth() + "</td>"
-                                        + "<td>" + queryClass.getSteps()[j].isDepthFirst() + "</td>"
-                                        + "<td>" + queryClass.getSteps()[j].getRelations().toString() + "</td>"
+                                        + "<td>" + query.getSteps()[j].getDepth() + "</td>"
+                                        + "<td>" + query.getSteps()[j].isDepthFirst() + "</td>"
+                                        + "<td>" + query.getSteps()[j].getRelations().toString() + "</td>"
                                         + "</tr>");
                             }
                             response.getWriter().print("</table><script>sigma.parsers.gexf("
-                                    + "'./results/" + queryClass.getClass().getSimpleName() + ".gexf',{"
+                                    + "'./results/" + query.getClass().getSimpleName() + ".gexf',{"
                                     + "container: '" 
-                                    + queryClass.getClass().getSimpleName()
+                                    + query.getClass().getSimpleName()
                                     + "sigma-container'},"
                                     + "function(s) {});"
                                     + "</script>\n"
                                     + "<div class=\"sigmacontainer\" id=\""
-                                    + queryClass.getClass().getSimpleName()
+                                    + query.getClass().getSimpleName()
                                     + "sigma-container\""
                                     + "style = \"max-width: 800px; height: 400px; margin: auto;\""
                                     + "></div>");
-
+                        }catch(IOException ioEx){
+                            System.out.println("get writer failed in QueryDBServlet");
+                            ioEx.printStackTrace();
                         }
                     }
 

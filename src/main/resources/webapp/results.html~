@@ -20,7 +20,7 @@
 		<script src="js/release-v1.0.3/plugins/sigma.parsers.json.min.js"></script>
 		<script>
 		sigma.parsers.gexf(
-			'Untitled.gexf',
+			'MetadataQuery.gexf',
 			{
 				// Here is the ID of the DOM element that
 				// will contain the graph:
@@ -41,6 +41,7 @@
 			<link rel="stylesheet" href="js/xcharts-build/build/xcharts.css">
 			<style type="text/css">
 				#sigma-container {
+					position: relative;
 					max-width: 800px;
 					height: 400px;
 					margin: auto;
@@ -74,7 +75,7 @@
 					<br /><br /><hr>
 
 					<ul>
-						<li><strong><a href="./query">BUILD</a></strong></li>
+						<li><strong><a href="./build">BUILD</a></strong></li>
 						|
 						<li><a href="./query">QUERY</a></li>
 					</ul>
@@ -93,7 +94,6 @@
 							<!-- Excerpts -->
 								<section>
 									<ul class="divided">
-										<li><a href="#integration_pipeline"><span>Integration pipeline</span></a></li>
 										<li><a href="#build_performance"><span>Build Performance</span></a>
 										<li><a href="#meta_graph"><span>Meta graph</span></a></li>
 									</ul>
@@ -106,16 +106,13 @@
 
 							<!-- Post -->
 								<article class="box post">
-									<header id='integration_pipeline'>
-										<h1>Integration pipeline</h1>
-									</header>
 
 									<!--insert pipeline information-->
 
 									<header id='build_performance'>
 										<h1>Build Performance</h1>
 									</header>
-									<figure style="width: 400px; height: 300px;" id="myChart"></figure>
+									<figure style="width: 100%; height: 30em;" id="myChart"></figure>
 
 									<script>
 									<!--insert performance json data-->

@@ -28,7 +28,7 @@ import org.neo4j.graphdb.traversal.TraversalDescription;
 import org.neo4j.graphdb.traversal.Traverser;
 import uk.ac.ncl.ssip.metadata.MetaDataInterface;
 import uk.ac.ncl.ssip.metadata.SSIPNode;
-import uk.ac.ncl.ssip.metadata.SSIPRelationType;
+import uk.ac.ncl.ssip.metadata.SSIPRelation;
 
 /**
  *
@@ -45,12 +45,13 @@ public class Neo4J implements BackendInterface {
     private final String UID = "UID";
     private final String refnode_id = "ref node";
     private List<MetaDataInterface> nodeBuffer = new ArrayList<MetaDataInterface>();
+    private Map<String, SSIPNode> metadata = new HashMap<String, SSIPNode>();
     private static int transactions = 1;
     private Performance performance;
 
-    public Neo4J(){
+    public Neo4J() {
     }
-    
+
     public Neo4J(String DB_PATH) {
         this.DB_PATH = DB_PATH;
         performance = new Performance();
@@ -150,15 +151,22 @@ public class Neo4J implements BackendInterface {
 
                 }
 
+                //update metadata 
+                metadata.put(nodeBuffer.get(id).getType(), new SSIPNode("metadata", nodeBuffer.get(id).getType()));
+
                 //add relations to neo4j node
                 for (MetaDataInterface toNodeObject : nodeBuffer.get(id).getRelations().keySet()) {
+
+                    //update metadata
+                    metadata.get(nodeBuffer.get(id).getType())
+                            .addRelation(new SSIPNode("metadata", toNodeObject.getType()), new SSIPRelation("metadata"));
 
                     //create/return equivalent neo4j node
 //                    Node toNeoNode = checkNode(UID, toNodeObject.getId());
                     Node toNeoNode = checkNode(toNodeObject.getId(), true);
 
                     //return relationship connecting nodes
-                    SSIPRelationType ssipRel = nodeBuffer.get(id).getRelations().get(toNodeObject);
+                    SSIPRelation ssipRel = nodeBuffer.get(id).getRelations().get(toNodeObject);
 
                     Relationship rel = node.createRelationshipTo(toNeoNode, ssipRel);
                     for (String attribute : ssipRel.getAttributes().keySet()) {
@@ -171,7 +179,9 @@ public class Neo4J implements BackendInterface {
             if (ref_created && nodeBuffer.size() > 0) {
                 Node refNode = graphDb.createNode(DynamicLabel.label(label_string));
                 refNode.setProperty(UID, getRefSSIPnode().getId());
-                refNode.createRelationshipTo(node, SSIPRelationType.RelTypes.KNOWS);
+                refNode.createRelationshipTo(node, new SSIPRelation("default"));
+                Node metanode = checkNode(nodeBuffer.get(0).getType(), false);
+                refNode.createRelationshipTo(metanode, new SSIPRelation("metadata"));
                 ref_created = false;
             }
             tx.success();
@@ -243,6 +253,9 @@ public class Neo4J implements BackendInterface {
 
     @Override
     public void finaliseDatabaseConnection() {
+        for (SSIPNode metaNode : metadata.values()) {
+            addNode(metaNode);
+        }
         commitTransaction();
         nodeBuffer.clear();
         System.out.println("Transaction closed");
@@ -281,7 +294,7 @@ public class Neo4J implements BackendInterface {
                 TraversalDescription td = graphDb.traversalDescription()
                         .breadthFirst()
                         .evaluator(
-                        Evaluators.toDepth(steps[i].getDepth()));
+                                Evaluators.toDepth(steps[i].getDepth()));
 
                 //add relationship rules to traversal if we have any
                 if (!rels.isEmpty()) {
@@ -336,13 +349,13 @@ public class Neo4J implements BackendInterface {
 
             //add relations 
             for (Relationship rel : neonode.getRelationships(Direction.OUTGOING)) {
-                SSIPRelationType ssipRel = new SSIPRelationType(rel.getType().toString());
+                SSIPRelation ssipRel = new SSIPRelation(rel.getType().toString());
                 for (String attribute : rel.getPropertyKeys()) {
                     ssipRel.addAttribute(attribute, rel.getProperty(attribute));
                 }
                 nodeObject.addRelation(
                         new SSIPNode(UID, (String) rel.getEndNode()
-                        .getProperty(UID)),
+                                .getProperty(UID)),
                         ssipRel);
             }
             returnNodes.put(nodeObject.getType() + nodeObject.getId(), nodeObject);
@@ -356,6 +369,27 @@ public class Neo4J implements BackendInterface {
      */
     public Map<String, MetaDataInterface> traversal(StepDescription... steps) {
         return traversal(getRefSSIPnode(), steps);
+    }
+
+    public Map<String, MetaDataInterface> getMetadata() {
+        Map<String, MetaDataInterface> returnNodes = new HashMap<String, MetaDataInterface>();
+
+        Traverser trevor;
+        try (Transaction tx = graphDb.beginTx()) {
+            //neo4j traversal object
+            TraversalDescription td = graphDb.traversalDescription()
+                    .breadthFirst()
+                    .relationships(new SSIPRelation("metadata"))
+                    .evaluator(
+                            Evaluators.all());
+
+            trevor = td.traverse(findNode(UID,refnode_id));
+            returnNodes = convertNeoNodesToSSIPNodes(trevor.nodes());
+
+            tx.success();
+        }
+        return returnNodes;
+
     }
 
     @Override
@@ -422,7 +456,7 @@ public class Neo4J implements BackendInterface {
             TraversalDescription td = graphDb.traversalDescription()
                     .breadthFirst()
                     .evaluator(
-                    Evaluators.all());
+                            Evaluators.all());
 
             trevor = td.traverse(findNode(UID, startNode.getId()));
             returnNodes = convertNeoNodesToSSIPNodes(trevor.nodes());
@@ -458,13 +492,13 @@ public class Neo4J implements BackendInterface {
         }
         //add relations 
         for (Relationship rel : neoNode.getRelationships(Direction.OUTGOING)) {
-            SSIPRelationType ssipRel = new SSIPRelationType(rel.getType().toString());
+            SSIPRelation ssipRel = new SSIPRelation(rel.getType().toString());
             for (String attribute : rel.getPropertyKeys()) {
                 ssipRel.addAttribute(attribute, rel.getProperty(attribute));
             }
             nodeObject.addRelation(
                     new SSIPNode(UID, (String) rel.getEndNode()
-                    .getProperty(UID)),
+                            .getProperty(UID)),
                     ssipRel);
         }
         return nodeObject;

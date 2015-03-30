@@ -7,7 +7,7 @@ import java.io.File;
 import java.util.Scanner;
 import uk.ac.ncl.ssip.dataaccesslayer.BackendInterface;
 import uk.ac.ncl.ssip.metadata.SSIPNode;
-import uk.ac.ncl.ssip.metadata.SSIPRelationType;
+import uk.ac.ncl.ssip.metadata.SSIPRelation;
 
 
 /**
@@ -16,11 +16,12 @@ import uk.ac.ncl.ssip.metadata.SSIPRelationType;
  * http://www.ncl.ac.uk/computing/people/student/m.g.collison
  *
  */
-public class KeggOrthologyParser implements ParserInterface{
+public class KeggOrthologyParser extends Object implements ParserInterface{
 
     private String filepath;
     private Scanner sc;
     private BackendInterface handler;
+    private String rel = "knows";
 
     public KeggOrthologyParser(String filepath, BackendInterface handler) {
         this.filepath = filepath;
@@ -63,7 +64,7 @@ public class KeggOrthologyParser implements ParserInterface{
 //                        System.out.println(splits[1].substring(0, splits[1].length() - 3));
                         String name = splits[1].substring(0, splits[1].length() - 3);
                         b = new SSIPNode("KOlevel2", name);
-                        b.addRelation(a,  new SSIPRelationType(SSIPRelationType.RelTypes.KNOWS.toString(), 1));
+                        b.addRelation(a,  new SSIPRelation(rel, 1));
                         handler.addNode(b);
 
                     }
@@ -77,7 +78,7 @@ public class KeggOrthologyParser implements ParserInterface{
 //                    System.out.println(splits[1] + "\t" + description);
                     String name = splits[1];
                     c = new SSIPNode("KOlevel3", name);
-                    c.addRelation(b, new SSIPRelationType(SSIPRelationType.RelTypes.KNOWS.toString(), 2));
+                    c.addRelation(b, new SSIPRelation(rel, 2));
                     handler.addNode(c);
                 }
                 if (line.startsWith("D")) {
@@ -89,7 +90,7 @@ public class KeggOrthologyParser implements ParserInterface{
                     String name = splits[1];
                     d = new SSIPNode("KOlevel4", name);
 //                    System.out.println(name);
-                    d.addRelation(c,  new SSIPRelationType(SSIPRelationType.RelTypes.KNOWS.toString(), 3));
+                    d.addRelation(c,  new SSIPRelation(rel, 3));
                     handler.addNode(d);
                 }
             }

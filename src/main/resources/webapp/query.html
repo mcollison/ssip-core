@@ -44,17 +44,17 @@
 				<!-- Nav -->
 					<nav id="nav">
 						<ul>
-							<li><a class="icon fa-home" href="http://homepages.cs.ncl.ac.uk/m.g.collison/biossip/index.html"
+							<li><a class="icon fa-home" href="http://homepages.cs.ncl.ac.uk/matthew.collison/biossip/index.html"
 							target="_blank"><span>Home</span></a></li>
-							<li><a class="icon fa-cog" href="http://homepages.cs.ncl.ac.uk/m.g.collison/biossip/documentation.html"
+							<li><a class="icon fa-cog" href="http://homepages.cs.ncl.ac.uk/matthew.collison/biossip/documentation.html"
 							target="_blank"><span>Documentation</span></a></li>
-							<li><a class="icon fa-phone" href="http://homepages.cs.ncl.ac.uk/m.g.collison/biossip/contact.html"
+							<li><a class="icon fa-phone" href="http://homepages.cs.ncl.ac.uk/matthew.collison/biossip/contact.html"
 							target="_blank"><span>Contact</span></a></li>
 						</ul>
 					</nav>
 
 				<!-- Logo -->
-					<h1 id="logo"><a href="http://homepages.cs.ncl.ac.uk/m.g.collison/biossip/index.html" target="_blank">
+					<h1 id="logo"><a href="http://homepages.cs.ncl.ac.uk/matthew.collison/biossip/index.html" target="_blank">
 					Semantically Scalable Integration Platform for Bioinformatics</a>
 
 					<br /><br /><hr>
@@ -97,8 +97,8 @@
 									</header>
 
 									<h1><ul>
-									<li><a href="./exportall.gexf" method="POST" target="_blank" class="button icon fa-download">Download GEXF</a></li>
-									<li><a href="./public_html/results/export_all.rdf" class="button icon fa-download">Download RDF</a></li>
+									<li><a href="./exportall.gexf" method="GET" target="_blank" class="button icon fa-download">Download GEXF</a></li>
+									<li><a href="./export_all.rdf" method="GET" target="_blank" class="button icon fa-download">Download RDF</a></li>
 									</ul><h1>
 									</form>
 
@@ -148,8 +148,8 @@
 									</header>
 									<form method="POST" action="query" id="sparqlForm" enctype="multipart/form-data">
 									Seed node type-id pair: 
-									<input type="text" name="type" placeholder="KOlevel4"> 
-									<input type="text" name="id" placeholder="K16197">
+									<input type="text" name="type" value="KOlevel4"> 
+									<input type="text" name="id" value="K16197">
 									
 									<table style="width:100%">
 									  <tr>
@@ -159,9 +159,9 @@
 										<td>Relationship type restrictions<td>
 									  </tr>
 									  <tr>
-										<td><input type="number" name="stepno" placeholder="1"></td>
-										<td><input type="number" name="steps" placeholder="2"></td> 
-										<td><input type="text" name="depth_first" placeholder="true"></td>
+										<td><input type="number" name="stepno" value=1></td>
+										<td><input type="number" name="steps" value=2></td> 
+										<td><input type="text" name="depth_first" value="true"></td>
 										<td><input type="text" name="relTypes" placeholder="NA"></td>
 									  </tr>
 									</table>
@@ -190,7 +190,7 @@
 		<div id="footer-wrapper">
 			<div id="copyright" class="container">
 				<ul class="links">
-					<li>&copy; <a href="http://homepages.cs.ncl.ac.uk/m.g.collison/">Matt Collison</a></li>
+					<li>&copy; <a href="http://homepages.cs.ncl.ac.uk/matthew.collison/">Matt Collison</a></li>
 					<li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
 					<li><a class="icon fa-bitbucket" href="https://bitbucket.org/m_collison/ssip"><span> Source Code</span></a></li>
 				</ul>

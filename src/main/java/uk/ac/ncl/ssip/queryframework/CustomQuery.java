@@ -16,7 +16,7 @@ import uk.ac.ncl.ssip.metadata.SSIPNode;
  *
  * @author Matt2
  */
-public class CustomQuery extends QueryInterface {
+public class CustomQuery extends QueryAbstractClass {
 
 
     public CustomQuery(String seedID, String seedType, StepDescription[] steps) {

@@ -17,7 +17,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.net.URL;
 import java.util.Collection;
+import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.logging.Level;
@@ -28,22 +30,30 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
+import org.apache.commons.io.FileUtils;
 import uk.ac.ncl.ssip.dataaccesslayer.Neo4J;
 import uk.ac.ncl.ssip.export.GephiExporter;
 import uk.ac.ncl.ssip.parsers.ParserInterface;
-import uk.ac.ncl.ssip.queryframework.ExampleQuery;
-import uk.ac.ncl.ssip.queryframework.QueryInterface;
+import uk.ac.ncl.ssip.queryframework.MetadataQuery;
+import uk.ac.ncl.ssip.queryframework.QueryAbstractClass;
 
 @MultipartConfig
 public class StartDBServlet extends HttpServlet {
+
+    private HttpServletRequest request;
+    private List<QueryAbstractClass> queries;
+
+    public StartDBServlet() {
+    }
+
+    public StartDBServlet(List<QueryAbstractClass> queries) {
+        this.queries = queries;
+    }
 
     private final static Logger LOGGER
             = Logger.getLogger(StartDBServlet.class.getCanonicalName());
     Collection<Part> fileParts;
     int fileNum = 0;
-
-    public StartDBServlet() {
-    }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -56,6 +66,7 @@ public class StartDBServlet extends HttpServlet {
             throws ServletException, IOException {
 
         fileParts = request.getParts();
+        this.request = request;
 
         //write uploaded files to uploads folder
         processFiles();
@@ -73,7 +84,7 @@ public class StartDBServlet extends HttpServlet {
 
     private void processFiles() throws IOException {
 
-        String path = new File(".").getCanonicalPath() + "/uploads/";
+        String path = new File(".").getCanonicalPath() + "/target/webapp/uploads/";
         System.out.println(path);
 
         OutputStream out = null;
@@ -81,26 +92,38 @@ public class StartDBServlet extends HttpServlet {
 
         try {
             for (Part filePart : fileParts) {
+                if (filePart.getName().contains("url")) {
+                    String[] urlSplit = request.getParameter(filePart.getName()).split("/");
+                    if(urlSplit.length>1){
+                    System.out.println("URL detected: " + filePart.getName()
+                            + "\nFile name: " + urlSplit[urlSplit.length - 1]);
+                    FileUtils.copyURLToFile(new URL(request.getParameter(filePart.getName())),
+                            new File("./target/webapp/uploads/" + urlSplit[urlSplit.length - 1]));
+                    System.out.println("New file " + urlSplit[urlSplit.length - 1] + " created in uploads.");
+                    }
+                }
                 if (filePart.getName().contains("file")) {
                     fileNum++;
-                    if (new File(path).list().toString().contains(getFileName(filePart))) {
-                        out = new FileOutputStream(new File(path + File.separator
-                                + getFileName(filePart)));
-                        filecontent = filePart.getInputStream();
+                    if (!getFileName(filePart).equals("")) {
+                        if (!(new File(path).list().toString().contains(getFileName(filePart)))) {
+                            out = new FileOutputStream(new File(path + File.separator
+                                    + getFileName(filePart)));
+                            filecontent = filePart.getInputStream();
 
-                        int read = 0;
-                        final byte[] bytes = new byte[1024];
+                            int read = 0;
+                            final byte[] bytes = new byte[1024];
 
-                        while ((read = filecontent.read(bytes)) != -1) {
-                            out.write(bytes, 0, read);
+                            while ((read = filecontent.read(bytes)) != -1) {
+                                out.write(bytes, 0, read);
+                            }
+                            //APPEND TO LOG FILE NOT CONSOLE
+                            System.out.println("New file " + getFileName(filePart) + " created at " + path);
+                            LOGGER.log(Level.INFO, "File{0}being uploaded to {1}",
+                                    new Object[]{getFileName(filePart), path});
+
+                        } else {
+                            System.out.println("File already exists in uploads: " + getFileName(filePart));
                         }
-                        //APPEND TO LOG FILE NOT CONSOLE
-                        System.out.println("New file " + getFileName(filePart) + " created at " + path);
-                        LOGGER.log(Level.INFO, "File{0}being uploaded to {1}",
-                                new Object[]{getFileName(filePart), path});
-
-                    } else {
-                        System.out.println("File already exists in uploads: " + getFileName(filePart));
                     }
                 }
             }
@@ -139,11 +162,16 @@ public class StartDBServlet extends HttpServlet {
         //configure embedded database 
         String fileRoot = new File(".").getCanonicalPath();
         File dbroot = new File(fileRoot + "/neo4j-databases/");
+        if (!dbroot.exists()) {
+            if (!dbroot.mkdir()) {
+                System.out.println("Unable to create neo4j directory");
+            }
+        }
         int dbversion = 1;
         for (int i = 0; i < dbroot.list().length; i++) {
             dbversion++;
         }
-        Neo4J backend = new Neo4J(fileRoot + "/neo4j-databases/BioSSIPv0.1." + dbversion, fileRoot + "/public_html/results/performance");
+        Neo4J backend = new Neo4J(fileRoot + "/neo4j-databases/BioSSIPv0.1." + dbversion, fileRoot + "/target/webapp/results/performance");
         backend.initialiseDatabaseConnection();
         backend.createIndex();
 
@@ -151,10 +179,12 @@ public class StartDBServlet extends HttpServlet {
         for (int i = 0; i < fileNum; i++) {
 
             String fileName = getFileName(request.getPart("file" + i));
-//            String fileNameIndex = fileName.substring(fileName.length() - 1);
+            if (fileName.equals("")) {
+                String[] urlSplit = request.getParameter("url" + i).split("/");
+                fileName = urlSplit[urlSplit.length - 1];
+            }
 
             String inputParser = request.getParameter("parser" + i);
-            System.out.println(inputParser);
             ParserInterface parserObj = null;
             try {
                 parserObj = (ParserInterface) Class
@@ -163,19 +193,14 @@ public class StartDBServlet extends HttpServlet {
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
-            parserObj.setFilepath(fileRoot + "/uploads/" + fileName);
+            parserObj.setFilepath(fileRoot + "/target/webapp/uploads/" + fileName);
             parserObj.setHandler(backend);
+            System.out.println("Parser initialised: " + inputParser);
             parserObj.parseFile();
+            System.out.println("Parser complete: " + inputParser);
+
         }
 
-//        //query database REDUNDANT
-//        System.out.println("export all code starts here...");
-//        GephiExporter gexfExportSubgraph = new GephiExporter();
-//
-//        String graphFile = fileRoot + "/public_html/results/gephi_export_all.gexf";
-//
-//        gexfExportSubgraph.export(backend.returnAllNodesMap(), graphFile);
-        //close database again 
         backend.finaliseDatabaseConnection();
 
     }
@@ -185,16 +210,16 @@ public class StartDBServlet extends HttpServlet {
         response.setStatus(HttpServletResponse.SC_OK);
 
         try {
-            Scanner sc = new Scanner(new File("./public_html/results.html"));
+            Scanner sc = new Scanner(new File("./target/webapp/results.html"));
             while (sc.hasNextLine()) {
                 String str = sc.nextLine();
 
-                if (str.contains("<!--insert pipeline information-->")) {
-                    System.getProperties().list(response.getWriter());
-                }
+//                if (str.contains("<!--insert pipeline information-->")) {
+//                    System.getProperties().list(response.getWriter());
+//                }
 
                 if (str.contains("<!--insert performance json data-->")) {
-                    Scanner sc2 = new Scanner(new File("./public_html/results/performance.json"));
+                    Scanner sc2 = new Scanner(new File("./target/webapp/results/performance.json"));
                     while (sc2.hasNextLine()) {
                         response.getWriter().println(sc2.nextLine());
                     }
@@ -213,25 +238,10 @@ public class StartDBServlet extends HttpServlet {
     }
 
     private void runQueries() {
-        QueryInterface queryClass=null;
-        File classDir = new File("./target/classes/uk/ac/ncl/ssip/queryframework/");
-        String[] classArr = classDir.list();
-        for (int i = 0; i < classArr.length - 1; i++) {
-            //remove example queries and interface
-            if (!(classArr[i].contains("Interface")
-                    || classArr[i].contains("CustomQuery")
-                    || classArr[i].contains("ExampleQueryStrategy"))) {
-
-                try{
-                queryClass = (QueryInterface) Class
-                        .forName("uk.ac.ncl.ssip.queryframework." + classArr[i].replace(".class", ""))
-                        .newInstance();
-                }catch(Exception ex){
-                    ex.printStackTrace();
-                }
-                queryClass.query();
-            }
-
+        for (QueryAbstractClass query : queries) {
+            query.query();
         }
+        new MetadataQuery().query();
+
     }
 }

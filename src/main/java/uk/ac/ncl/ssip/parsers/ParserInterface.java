@@ -16,5 +16,5 @@ public interface ParserInterface {
     
     public void parseFile();
     public void setHandler(BackendInterface handler);
-    public void setFilepath(String handler);
+    public void setFilepath(String filepath);
 }

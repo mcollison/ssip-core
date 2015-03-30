@@ -17,6 +17,7 @@
 		var p=1;
 		var fileStr = "file";
 		var parserStr = "parser";
+		var urlStr = "url";
 
 		function addData() {
 
@@ -29,11 +30,35 @@
 				fileUp.setAttributeNode(att1);
 				fileUp.setAttributeNode(att2);
 
+				//create URL upload element
+				var urlUp = document.createElement("input");
+				var att1 = document.createAttribute("name");
+				att1.value = urlStr.concat(p);
+				var att2 = document.createAttribute("type");
+				att2.value = "url";
+				urlUp.setAttributeNode(att1);
+				urlUp.setAttributeNode(att2);
+
 				//create parser drop down list
 				var par = document.createElement("select");
 				var att1 = document.createAttribute("name");
 				att1.value = parserStr.concat(p);
 				par.setAttributeNode(att1);
+
+				//create remove button <input type="button" class="delete" onclick="deleteRow(0)" value="x"
+				var del = document.createElement("input");
+				var att1 = document.createAttribute("type");
+				var att2 = document.createAttribute("class");
+				var att3 = document.createAttribute("onclick");
+				var att4 = document.createAttribute("value");
+				att1.value = "button";
+				att2.value = "delete";
+				att3.value = "deleteRow("+p+")";
+				att4.value = "x";
+				del.setAttributeNode(att1);
+				del.setAttributeNode(att2);
+				del.setAttributeNode(att3);
+				del.setAttributeNode(att4);
 				
 				//initialise options array with parsers
 				for (var i=0; i < month.length;++i){
@@ -47,14 +72,21 @@
 
 				//create table elements and position everything 
 				var newtr = document.createElement("tr");
+				newtr.id="tableRow"+p;
 				var newtd1 = document.createElement("td");
 				var newtd2 = document.createElement("td");
+				var newtd3 = document.createElement("td");
+				var newtd4 = document.createElement("td");
 				newtd1.appendChild(fileUp);
+				newtd3.appendChild(urlUp);
 				newtd2.appendChild(par);
+				newtd4.appendChild(del);
 				newtr.appendChild(newtd1);
+				newtr.appendChild(newtd3);
 				newtr.appendChild(newtd2);
+				newtr.appendChild(newtd4);
 				
-				var form_element = document.getElementById("uiTable");				
+				var form_element = document.getElementById("demoNameTbody");				
 				form_element.appendChild(newtr);
 				p=p+1;
 		}
@@ -76,6 +108,13 @@
 				form_element.insertBefore(btn,prev_item);
 				i=i+1;
 			}
+		}
+		function deleteRow(num){
+			var parent = document.getElementById("demoNameTbody");
+			console.log(parent);
+			var child = document.getElementById("tableRow"+num);
+			console.log(child);
+			parent.removeChild(child);
 		}
 
 		</script>
@@ -124,12 +163,16 @@
 							</header>
 							<form method="POST" action="build" id="filePathForm" enctype="multipart/form-data">
 								<table id="uiTable">
+								<tbody id="demoNameTbody">
 									<tr>
 										<td>File:</td>
+										<td>URL:</td>
 										<td>Parser:</td>
+										<td></td>
 									</tr>
-									<tr id="tableRow">
+									<tr id="tableRow0">
 										<td><input type="file" name="file0" id="fileUpload" /></td> 
+										<td><input type="url" name="url0" id="urlfileUpload" /></td> 
 										<td id="tableCol">
 											<script>
 												var form_element = document.getElementById("filePathForm");
@@ -152,7 +195,9 @@
 												prev_item.appendChild(menu);
 											</script>
 										</td>
+										<td><input type="button" class="delete" onclick="deleteRow(0)" value="x"></a></td>
 									</tr>
+								</tbody>
 								</table>
 								<a href="#" onclick="addData()">Add another data source</a>
 								<br />
@@ -160,24 +205,27 @@
 								<input type="submit" value="Upload" name="upload" id="upload" />
 							</form>
 							<table>
+							<!-- Advanced settings are not implemented yet
 							<a href="#" onclick="myFunction()">Advanced settings...</a>							
+							--->
 						</article>
 				
 				</div>
 			</div>
 		</div>
+	</div>
 
 
-		<!-- Footer -->
-		<div id="footer-wrapper">
-			<div id="copyright" class="container">
-				<ul class="links">
-					<li>&copy; <a href="http://homepages.cs.ncl.ac.uk/m.g.collison/">Matt Collison</a></li>
-					<li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
-					<li><a class="icon fa-bitbucket" href="https://bitbucket.org/m_collison/ssip"><span> Source Code</span></a></li>
-				</ul>
-			</div>
+	<!-- Footer -->
+	<div id="footer-wrapper">
+		<div id="copyright" class="container">
+			<ul class="links">
+				<li>&copy; <a href="http://homepages.cs.ncl.ac.uk/m.g.collison/">Matt Collison</a></li>
+				<li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+				<li><a class="icon fa-bitbucket" href="https://bitbucket.org/m_collison/ssip"><span> Source Code</span></a></li>
+			</ul>
 		</div>
+	</div>
 
 	</body>
 </html>

@@ -31,7 +31,7 @@ public interface BackendInterface {
     * commits current update list to database. 
     */
     public void commitTransaction();
-
+    
     /* 
     * Commits final update to database connection and close connection cleanly. 
     */
@@ -65,5 +65,8 @@ public interface BackendInterface {
     */
     public String getDatabaseName();
     
-    
+    /*
+    * Creates an index to improve performance of the database 
+    */
+    public void createIndex();
 }

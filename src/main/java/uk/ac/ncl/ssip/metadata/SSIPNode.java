@@ -8,7 +8,6 @@ package uk.ac.ncl.ssip.metadata;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import org.neo4j.graphdb.RelationshipType;
 
 /**
  *
@@ -16,24 +15,27 @@ import org.neo4j.graphdb.RelationshipType;
  */
 public class SSIPNode implements MetaDataInterface {
 
-    //<TODO> think: how do we assert equality?? can we have a separate String<Set> accessions
-    //and use this as equalirt assertion as opposed to looking thorugh all the 
-    //properties??
     private String type;
     private String id;
     private Map<String, Object> attributes = new HashMap<String, Object>();
-    private Map<MetaDataInterface, SSIPRelationType> relations = new HashMap<MetaDataInterface, SSIPRelationType>();
+    private Map<MetaDataInterface, SSIPRelation> relations = new HashMap<MetaDataInterface, SSIPRelation>();
 
-    public SSIPNode(String type, String id, Map<MetaDataInterface, SSIPRelationType> relations, Map<String, Object> attributes) {
+    public SSIPNode(String type, String id, Map<MetaDataInterface, SSIPRelation> relations, Map<String, Object> attributes) {
         this.type = type;
         this.id = id;
         this.relations = relations;
         this.attributes = attributes;
+        if (!type.equals("metadata")) {
+            this.addRelation(new SSIPNode("metadata", type), new SSIPRelation("instance"));
+        }
     }
 
     public SSIPNode(String type, String id) {
         this.type = type;
         this.id = id;
+        if (!type.equals("metadata")) {
+            this.addRelation(new SSIPNode("metadata", type), new SSIPRelation("instance"));
+        }
     }
 
     @Override
@@ -52,12 +54,12 @@ public class SSIPNode implements MetaDataInterface {
     }
 
     @Override
-    public Map<MetaDataInterface, SSIPRelationType> getRelations() {
+    public Map<MetaDataInterface, SSIPRelation> getRelations() {
         return relations;
     }
 
     @Override
-    public void addRelation(MetaDataInterface nodeObj, SSIPRelationType tr) {
+    public void addRelation(MetaDataInterface nodeObj, SSIPRelation tr) {
         relations.put(nodeObj, tr);
     }
 
@@ -91,7 +93,7 @@ public class SSIPNode implements MetaDataInterface {
     }
 
     @Override
-    public SSIPRelationType getRelation(MetaDataInterface nodeObject) {
+    public SSIPRelation getRelation(MetaDataInterface nodeObject) {
 
         for (MetaDataInterface met : relations.keySet()) {
             if (nodeObject.getId().equals(met.getId()) && nodeObject.getType().equals(met.getType())) {

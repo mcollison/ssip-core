@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
 import java.util.Set;
-import uk.ac.ncl.ssip.metadata.SSIPRelationType;
+import uk.ac.ncl.ssip.metadata.SSIPRelation;
 
 /**
  *
@@ -19,7 +19,7 @@ public interface MetaDataInterface {
 
     String type = null;
     String id = null;
-    Map<MetaDataInterface, SSIPRelationType> relations = new HashMap<MetaDataInterface, SSIPRelationType>();
+    Map<MetaDataInterface, SSIPRelation> relations = new HashMap<MetaDataInterface, SSIPRelation>();
     Map<String, Object> attributes = new HashMap<String, Object>();
     
     public String getType();
@@ -28,11 +28,11 @@ public interface MetaDataInterface {
 
     public void setId(String id);
     
-    public Map<MetaDataInterface, SSIPRelationType> getRelations();
+    public Map<MetaDataInterface, SSIPRelation> getRelations();
     
-    public SSIPRelationType getRelation(MetaDataInterface nodeObject);
+    public SSIPRelation getRelation(MetaDataInterface nodeObject);
     
-    public void addRelation(MetaDataInterface nodeObj, SSIPRelationType tr); 
+    public void addRelation(MetaDataInterface nodeObj, SSIPRelation tr); 
 
     public Set<String> getAllPropertyNames();
     

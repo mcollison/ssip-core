@@ -4,6 +4,7 @@
  */
 package uk.ac.ncl.ssip.parsers;
 
+import uk.ac.ncl.ssip.export.*;
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.NodeIterator;
@@ -16,8 +17,7 @@ import java.util.HashSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.jena.riot.RDFDataMgr;
-import org.openide.util.Exceptions;
-import uk.ac.ncl.ssip.dataaccesslayer.Neo4J;
+import uk.ac.ncl.ssip.dataaccesslayer.BackendInterface;
 
 /**
  *
@@ -29,20 +29,24 @@ import uk.ac.ncl.ssip.dataaccesslayer.Neo4J;
  * <TODO> Update to use the rdf-util package from Goksel and Curtis (now added
  * to project pom)
  */
-public class RdfImporter {
+public class RdfImporter implements ParserInterface{
 
     private String file;
     private Model rdfModel;
-    private Neo4J backend;
+    private BackendInterface backend;
     private final static Logger LOGGER = Logger.getLogger(RdfImporter.class.getName());
 
-    public RdfImporter(String file, Neo4J backend) {
+    public RdfImporter(){
+    }
+    
+    public RdfImporter(String file, BackendInterface backend) {
         this.file = file;
         this.rdfModel = RDFDataMgr.loadModel(file);
         this.backend = backend;
     }
+    
 
-    public void run() {
+    public void parseFile() {
 
         LOGGER.log(Level.INFO, "Pulling graph into SSIP from ...{0}", file);
 
@@ -82,5 +86,15 @@ public class RdfImporter {
 
         LOGGER.log(Level.INFO, "Finished parsing graph ...");
 
+    }
+
+    @Override
+    public void setFilepath(String filepath) {
+        this.file=filepath;
+    }
+
+    @Override
+    public void setHandler(BackendInterface handler) {
+        this.backend=handler;
     }
 }

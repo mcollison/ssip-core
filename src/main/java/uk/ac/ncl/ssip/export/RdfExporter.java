@@ -22,10 +22,9 @@ import java.net.URISyntaxException;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.openide.util.Exceptions;
 import uk.ac.ncl.ssip.dataaccesslayer.Neo4J;
 import uk.ac.ncl.ssip.metadata.MetaDataInterface;
-import uk.ac.ncl.ssip.metadata.SSIPRelationType;
+import uk.ac.ncl.ssip.metadata.SSIPRelation;
 
 /**
  *
@@ -45,40 +44,7 @@ public class RdfExporter {
     private Map<String, MetaDataInterface> jbeanMap;
     private String filename;
     
-    public static void main(String[] args) {
-        //test
-        Neo4J graph = new Neo4J("test");
-//        graph.initialiseDatabaseConnection();
-//        graph.createIndex();
-//        /**
-//         * Toy Graph
-//         */
-//        SSIPNode one = new SSIPNode("test", "hello");
-//        SSIPNode two = new SSIPNode("test", "world");
-//        SSIPRelationType rel = new SSIPRelationType("testrel");
-//        one.addRelation(two, rel);
-//        graph.addNode(one);
-//        graph.addNode(two);
-        /**
-         * Finished toy graph
-         */
-//        graph.commitTransaction();
-//        graph.finaliseDatabaseConnection();
-        /**
-         * RDF exporter
-         */        
-        graph.initialiseDatabaseConnection();
-        
-        RdfExporter rdf = null;
-        try {
-            rdf = new RdfExporter(graph.returnAllNodesMap(), "output.xml", new URI("http://DReSMin/test"));
-            rdf.export();
-        } catch (URISyntaxException ex) {
-            Exceptions.printStackTrace(ex);
-        }
-        
-        graph.finaliseDatabaseConnectionNoUPDATES();
-        
+    public RdfExporter(){
     }
 
     /**
@@ -119,7 +85,7 @@ public class RdfExporter {
                     addProperty(rdfNode, prop, (String) ssipNodeAttributes.get(attName));
                 }
                 //add all the relations
-                Map<MetaDataInterface, SSIPRelationType> relations = ssipNode.getRelations();
+                Map<MetaDataInterface, SSIPRelation> relations = ssipNode.getRelations();
                 for (MetaDataInterface met : relations.keySet()) {
                     //need a check to see if the node has been created
                     Resource typeResource = rdfModel.getResource(createURI(getBaseURI(), met.getId()).toString());
@@ -131,7 +97,7 @@ public class RdfExporter {
         try {
             save(rdfModel, filename);
         } catch (IOException ex) {
-            Exceptions.printStackTrace(ex);
+            ex.printStackTrace();
         }
         
         LOGGER.log(Level.INFO, "Exported SSIP graph to RDF ...{0}", filename);
